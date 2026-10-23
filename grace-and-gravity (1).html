@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Grace &amp; Gravity — A Scholar’s Reflections on Science and Faith</title>
+<style>
+/* ===== 1. DESIGN TOKENS (light academic palette; dark values for dark-mode viewers) ===== */
+:root {
+  --bg: #F9F9F9;
+  --surface: #FFFFFF;
+  --text: #2C3E50;
+  --muted: #5B6B7B;
+  --accent: #3498DB;
+  --accent-strong: #1F6FA5; /* darker blue so links keep high contrast on light surfaces */
+  --border: #E1E6EA;
+  --serif: "Playfair Display", "Times New Roman", Georgia, serif;
+  --sans: Inter, Arial, "Helvetica Neue", sans-serif;
+  color-scheme: light;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14191F; --surface: #1C232B; --text: #E6ECF1; --muted: #A5B2BE;
+    --accent: #5DADE2; --accent-strong: #7DBDEA; --border: #2B3540; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14191F; --surface: #1C232B; --text: #E6ECF1; --muted: #A5B2BE;
+  --accent: #5DADE2; --accent-strong: #7DBDEA; --border: #2B3540; color-scheme: dark;
+}
+html { scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 70px); scroll-behavior: smooth; }
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.7; }
+h1, h2, h3 { font-family: var(--serif); line-height: 1.25; margin: 0 0 .5rem; }
+a { color: var(--accent-strong); }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 1.25rem; }
+.skip { position: absolute; left: -999px; }
+.skip:focus { left: 1rem; top: 1rem; background: var(--surface); padding: .5rem 1rem; z-index: 20; }
+
+/* ===== 2. HEADER: site title and tagline ===== */
+.site-header { text-align: center; padding: 2.5rem 1rem 1.25rem; }
+.site-header h1 { font-size: clamp(2rem, 6vw, 3.2rem); letter-spacing: .01em; }
+.site-header p { margin: 0; color: var(--muted); font-style: italic; }
+
+/* ===== 3. NAVIGATION: sticky academic bar ===== */
+.nav { position: sticky; top: 0; z-index: 10; background: var(--surface); border-block: 1px solid var(--border); padding-top: env(safe-area-inset-top, 0px); }
+.nav ul { list-style: none; margin: 0 auto; padding: 0; max-width: 1100px; display: flex; justify-content: center; flex-wrap: wrap; }
+.nav a { display: block; padding: .9rem 1.4rem; color: var(--text); text-decoration: none; font-size: .95rem; letter-spacing: .06em; text-transform: uppercase; border-bottom: 2px solid transparent; }
+.nav a:hover { color: var(--accent-strong); border-bottom-color: var(--accent); }
+
+/* ===== 4. HERO: scripture and short bio ===== */
+.hero { text-align: center; padding: 4rem 1.25rem 3rem; max-width: 760px; margin: 0 auto; }
+.hero blockquote { margin: 0 0 .5rem; font-family: var(--serif); font-size: clamp(1.6rem, 4.5vw, 2.4rem); font-style: italic; }
+.hero cite { display: block; color: var(--accent-strong); font-style: normal; letter-spacing: .08em; text-transform: uppercase; font-size: .85rem; margin-bottom: 1.75rem; }
+.hero p { color: var(--muted); font-size: 1.05rem; margin: 0; }
+.rule { width: 60px; height: 3px; background: var(--accent); border: 0; margin: 1.5rem auto; }
+
+/* ===== 5. MAIN LAYOUT: blog feed + sidebar ===== */
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 2.5rem; padding-bottom: 3rem; }
+.section-title { font-size: 1.6rem; padding-bottom: .5rem; border-bottom: 1px solid var(--border); margin: 2rem 0 1.25rem; }
+.section-title:first-child { margin-top: 0; }
+
+/* ===== 6. BLOG FEED: CSS Grid of post cards ===== */
+.feed { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; align-items: start; }
+.card { background: var(--surface); border: 1px solid var(--border); border-top: 3px solid var(--accent); border-radius: 4px; padding: 1.4rem; display: flex; flex-direction: column; }
+.card .tag { font-size: .75rem; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-strong); font-weight: 600; }
+.card h3 { font-size: 1.25rem; margin: .35rem 0; }
+.card time { font-size: .85rem; color: var(--muted); }
+.card p { margin: .75rem 0 1.25rem; flex: 1; }
+.btn { align-self: flex-start; display: inline-block; padding: .5rem 1.1rem; border: 1px solid var(--accent-strong); border-radius: 3px; color: var(--accent-strong); text-decoration: none; font-size: .9rem; font-weight: 600; }
+.btn:hover { background: var(--accent-strong); color: var(--surface); }
+
+/* ===== 6b. READ MORE: expandable notes (pure HTML, no JavaScript) ===== */
+.more { width: 100%; }
+.more summary { list-style: none; cursor: pointer; }
+.more summary::-webkit-details-marker { display: none; }
+.more .close-label, .more[open] .open-label { display: none; }
+.more[open] .close-label { display: inline; }
+.notes { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+.notes p { margin: 0 0 .9rem; flex: none; }
+.notes h4 { font-family: var(--serif); margin: 1rem 0 .4rem; font-size: 1rem; }
+.notes ul { margin: 0 0 .9rem; padding-left: 1.2rem; }
+.notes .ref { color: var(--muted); font-size: .85rem; font-style: italic; }
+
+/* ===== 7. SIDEBAR: kept to two calm widgets ===== */
+.sidebar { align-self: start; display: grid; gap: 1.25rem; }
+.widget { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 1.4rem; }
+.widget h2 { font-size: 1.15rem; border-bottom: 1px solid var(--border); padding-bottom: .5rem; margin-bottom: .9rem; }
+.widget blockquote { margin: 0; font-family: var(--serif); font-style: italic; font-size: 1.1rem; }
+.widget cite { display: block; margin-top: .5rem; font-size: .85rem; color: var(--muted); font-style: normal; }
+.widget p { margin: 0; font-size: .95rem; }
+
+/* ===== 8. CONTACT ===== */
+.contact { background: var(--surface); border-top: 1px solid var(--border); padding: 3rem 1.25rem; text-align: center; }
+.contact p { max-width: 560px; margin: 0 auto 1rem; color: var(--muted); }
+
+/* ===== 9. FOOTER ===== */
+footer { text-align: center; padding: 1.5rem 1rem; font-size: .85rem; color: var(--muted); }
+
+/* ===== 10. RESPONSIVE: tablet and phone ===== */
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 620px) {
+  .feed, .sidebar { grid-template-columns: 1fr; }
+  .nav a { padding: .75rem .9rem; font-size: .85rem; }
+  .hero { padding: 2.5rem 1.25rem 2rem; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- HEADER -->
+<header class="site-header">
+  <h1>Grace &amp; Gravity</h1>
+  <p>By David Okoth Omondi</p>
+  <p>Exploring the intersection of Science and Faith.</p>
+</header>
+
+<!-- NAVIGATION -->
+<nav class="nav" aria-label="Main navigation">
+  <ul>
+    <li><a href="#reflections">Reflections</a></li>
+    <li><a href="#research">Research</a></li>
+    <li><a href="#faith">Faith</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO: scripture and bio introduction -->
+<section class="hero" aria-labelledby="hero-verse">
+  <blockquote id="hero-verse">“Be still, and know that I am God.”</blockquote>
+  <cite>Psalm 46:10</cite>
+  <hr class="rule">
+  <p>Welcome. I’m an engineer learning to measure the world carefully and to trust the One who made it. Here I write about what I’m studying academicallyand spiritually and how the two keep meeting.</p>
+</section>
+
+<div class="wrap layout" id="main">
+
+  <main>
+    <!-- SPIRITUAL REFLECTIONS -->
+    <h2 class="section-title" id="reflections">Spiritual Reflections</h2>
+    <div class="feed">
+      <article class="card">
+        <span class="tag">Reflection</span>
+        <h3>Held Together: Grace in Everyday Forces</h3>
+        <time datetime="2026-10-22">22 October 2026</time>
+        <p>Gravity is never seen, yet everything leans on it. A short meditation on Colossians 1:17 and the quiet faithfulness that sustains us.</p>
+        <details class="more">
+          <summary class="btn" aria-label="Toggle full notes: Held Together"><span class="open-label">Read More</span><span class="close-label">Show Less</span></summary>
+          <div class="notes">
+            <p>We rarely think about gravity until we stumble. It works silently, constantly, and without applause. Scripture describes Christ in the same way: “in him all things hold together” (Colossians 1:17). The Greek behind "hold together" is synistēmi, that is, "to stand together," "to cohere" and Paul uses it in the present tense. Christ is right now continuously upholding His creation. This is not a God who wound the clock and stepped back; it is the picture of a universe whose very persistence is borrowed moment by moment. The author of Hebrews says the same: the Son "upholds the universe by the word of his power" (Hebrews 1:3). And in Acts, Paul tells the Athenians that in God "we live and move and have our being" (Acts 17:28) not merely that we were made by him, but that we are currently upheld by him.</p>
+            <p>We notice gravity when we fall. We notice sustaining grace when we are brought low, when the ground gives way and something holds us anyway. "The eternal God is your refuge, and underneath are the everlasting arms" (Deuteronomy 33:27). The psalmist testifies from experience: "When I said, 'My foot is slipping,' your unfailing love, LORD, supported me" (Psalm 94:18). And again: "He lifted me out of the slimy pit... he set my feet on a rock and gave me a firm place to stand" (Psalm 40:2). The moments we stumble are not evidence of God's absence but often the first time we see what was holding us all along.</p>
+            <p>Don't press the analogy too hard. Gravity is impersonal, deterministic, indifferent; grace is personal, free, self-giving. Gravity doesn't choose to hold you. So let gravity be a signpost, not a definition, a created echo of the Creator's character rather than an equation for it. Paul's point is christological, not mechanical: the One who holds things together is a Person, and the holding is love. "For God was pleased to have all his fullness dwell in him, and through him to reconcile to himself all things" (Colossians 1:19–20).</p>
+            <p>Every equation I study assumes a stable world that behaves the same tomorrow as today. That reliability is not a coincidence to me; it is a daily reminder of a faithful Creator.</p>
+            <h4>Questions to sit with</h4>
+            <ul><li>Where am I being held up without noticing?</li><li>How can I be a quiet, steady presence for others?</li></ul>
+            <p class="ref">Further reading: Colossians 1:15–20; Psalm 104; Matthew 10:29; Psalms 147:4; Genesis 8:22.</p>
+          </div>
+        </details>
+      </article>
+      <article class="card">
+        <span class="tag">Reflection</span>
+        <h3>Stillness in a Season of Deadlines</h3>
+        <time datetime="2026-10-02">2 October 2026</time>
+        <p>What does it mean to “be still” when the calender will not slow down? Notes on rest as an act of trust.</p>
+        <details class="more">
+          <summary class="btn" aria-label="Toggle full notes: Stillness in a Season of Deadlines"><span class="open-label">Read More</span><span class="close-label">Show Less</span></summary>
+          <div class="notes">
+            <p>The command to "be still" is not an invitation to laziness. It is an invitation to remember who carries the weight. "Be still, and know that I am God" (Psalm 46:10). Notice the order: the stillness comes first, and the knowing follows. We tend to think clarity will produce calm, that once the deadlines clear, the exams pass, the quarter closes, the project ships we'll finally rest. Psalm 46 reverses it. Stillness is the posture in which we remember whose the work actually is.</p>
+            <p>Jesus makes the same offer: "Come to me, all you who are weary and burdened, and I will give you rest. Take my yoke upon you and learn from me, for I am gentle and humble in heart, and you will find rest for your souls" (Matthew 11:28–29). Notice what he doesn't promise a lighter syllabus, a shorter reading list, an easier quarter, a smaller workload. He promises himself, and a yoke. A yoke, a working tool; the rest he offers is not the absence of labor but labor shared. That is the difference between escaping your work and being carried through it.</p>
+            <p>The temptation is the same in both worlds, only the vocabulary differs. For the student it sounds like I'll rest after the final examination or after school. For the professional it sounds like I'll rest after the launch of this project and then the next one, and the next. The deadline is never the last one. That is exactly why the stillness has to come before the work is finished, not after. Rest is not the reward for finishing; it is the trust that sustains you while the work is still unfinished.</p>
+            <h4>Try This Rhythm</h4>
+            <ul><li>Begin the morning with one verse before opening any screen.</li><li>Pause between tasks, between meetings, between lectures for one slow breath and a short prayer.</li><li>End the day by naming one thing that went well, whether a completed assignment or a closed deal </li></ul>
+            <p class="ref">Further reading: Psalm 46; Matthew 11:28–30; Psalms 127:1–2; 1 Peter 5:7.</p>
+          </div>
+        </details>
+      </article>
+    </div>
+
+    <!-- ACADEMIC / SCIENCE UPDATES -->
+    <h2 class="section-title" id="research">Academic &amp; Science Updates</h2>
+    <div class="feed">
+      <article class="card">
+        <span class="tag">Research</span>
+        <h3>Feedback Loops and Stewardship</h3>
+        <time datetime="2026-10-10">10 October 2026</time>
+        <p>What control systems teach us about responsibility: sensing, correcting, and staying faithful to a set point.</p>
+        <details class="more">
+          <summary class="btn" aria-label="Toggle full notes: Feedback Loops and Stewardship"><span class="open-label">Read More</span><span class="close-label">Show Less</span></summary>
+          <div class="notes">
+            <p>A control system does three things: it senses the present state, compares it with the desired state, and corrects the difference. A thermostat reads the room, compares it to the setting, and turns the heat on or off. A cruise control measures your speed, compares it to the target, and adjusts the throttle. Good stewardship looks surprisingly similar.</p>
+            <h4>The parallel</h4>
+            <ul><li><strong>Sensor:</strong> honest self-examination.</li><li><strong>Set point:</strong> the standard Scripture gives us.</li><li><strong>Controller and actuator:</strong> repentance and steady, small corrections.</li></ul>
+            <p>Without feedback, a system drifts. A ship without a compass still moves—it just doesn't arrive. With feedback but no clear set point, it only reacts. We need both truth about where we are and clarity about where we are going.</p>
+            <h4>Why the sensor matters.</h4>
+            <p>A control system is only as good as its measurement. A faulty sensor doesn't stop the loop, it corrupts it, and the system corrects confidently in the wrong direction. Scripture takes honest self-examination just as seriously: "Search me, God, and know my heart; test me and know my anxious thoughts. See if there is any offensive way in me" (Psalm 139:23–24). And James warns against the self-deception of hearing the word "and so deceiving yourselves" (James 1:22) a person who glances in the mirror and forgets what they look like. The sensor must be honest, or the correction is wasted.</p>
+            <h5>Why the set point matters.Why the set point matters.</h5>
+            <p>Correction only means something relative to a standard. The Christian's set point is not the culture's expectations, nor our own comfort, nor last year's version of ourselves, it is "the standard Scripture gives us." Paul calls it being "conformed to the image of his Son" (Romans 8:29), and urges us not to "conform to the pattern of this world, but be transformed by the renewing of your mind" (Romans 12:2). Without a fixed point, feedback becomes mere reactivity. A life that adjusts constantly to whatever is loudest.</p>
+            <h6>Why the correction matters.</h6>
+            <p>Here is where control theory gets humbling: correction is almost always small. A good controller doesn't lurch; it nudges. It makes many tiny adjustments rather than one dramatic one. Repentance works the same way rarely one grand turnaround, usually a hundred small re-steerings. "Let us throw off everything that hinders... and let us run with perseverance" (Hebrews 12:1). Perseverance is a control loop, not a sprint. And the corrections compound: small and steady beats dramatic and sporadic, in engineering and in sanctification alike.</p>
+            <p class="ref">Further Reading: Psalm 139:23–24; James 1:22–25; Romans 8:29; Romans 12:1–2; Hebrews 12:1–2.</p>
+          </div>
+        </details>
+      </article>
+    </div>
+
+    <!-- FAITH: study and theology -->
+    <h2 class="section-title" id="faith">Faith &amp; Study</h2>
+    <div class="feed">
+      <article class="card">
+        <span class="tag">Bible Study</span>
+        <h3>Reading Scripture with Care</h3>
+        <time datetime="2026-09-20">20 September 2026</time>
+        <p>A simple method for studying a passage: context, observation, and application, with humility at every step.</p>
+        <details class="more">
+          <summary class="btn" aria-label="Toggle full notes: Reading Scripture with Care"><span class="open-label">Read More</span><span class="close-label">Show Less</span></summary>
+          <div class="notes">
+            <p>A passage means something first to its original hearers, and only then to us. That single sentence has saved me from more bad readings than any commentary. A three-step method keeps me honest:</p>
+            <h4>Context: who wrote it, to whom, and why?</h4>
+            <p>Before asking what a verse means to me, ask what it meant when it was written. Who is speaking? Who is listening? What problem is being addressed? Paul doesn't write Romans to a general audience, he writes to a specific church with specific tensions. The Psalms were sung by a specific people in specific seasons of exile, worship, and lament. Reading a verse out of its context is like reading a single line of a letter and calling it the whole message. "Do not be anxious about anything" (Philippians 4:6) is not a slogan; it is written from a prison cell by a man who had learned it the hard way.</p>
+            <h5>Observation: what does the text actually say?</h5>
+            <p>Here is where the discipline gets real. List repeated words. Circle key verbs. Notice who does what. Read the passage twice. Once for the forest, once for the trees. "The Lord is my shepherd; I shall not want" (Psalm 23:1) slow down and notice the verbs: he makes me lie down, he leads me, he restores my soul. The text is doing more than we usually give it credit for, but only if we look. A good question to ask: what would I notice if I had never read this before?</p>
+            <h6>Application: what is one concrete way to obey?</h6>
+            <p>James is blunt about this: "Do not merely listen to the word, and so deceive yourselves. Do what it says" (James 1:22). Notice one concrete way. Not a vague intention to "be more faithful," but a specific act: a phone call, a forgiveness, a boundary, a habit. Application that stays abstract rarely becomes obedience. And application should flow from the passage, not be imposed on it, what is this text asking of me, not what would I like it to ask?</p>
+            <h7>Compare Scripture with Scripture</h7>
+            <p>No verse stands alone. "All Scripture is God-breathed and is useful" (2 Timothy 3:16), and the whole counsel of God (Acts 20:27) corrects our tendency to build doctrines on fragments. When a passage puzzles you, look for where else Scripture speaks to the same theme. Let the clear illuminate the unclear.</p>
+            <h8>Hold your conclusions with humility.</h8>
+            <p>Here is the quiet discipline that keeps the method from becoming a machine. We read as people with histories, assumptions, and blind spots and we are not the first to read these texts. "Let the wise listen and add to their learning" (Proverbs 1:5). Hold conclusions firmly enough to act on them, loosely enough to be corrected. The goal of Bible study is not to master the text but to be mastered by it.</p>
+        
+        <p>Context keeps us honest, observation keeps us attentive, application keeps us doers and humility keeps us teachable. Read with care, and the text will repay the care many times over.</p>  
+            <p class="ref">Further Reading:  Psalm 23; James 1:19–25; 2 Timothy 3:16–17; Acts 20:27; Proverbs 1:5.</p>
+          </div>
+        </details>
+      </article>
+      <article class="card">
+        <span class="tag">Faith &amp; Science</span>
+        <h3>Do Faith and Science Really Collide?</h3>
+        <time datetime="2026-09-30">30 September 2026</time>
+        <p>Why asking “how” and asking “why” are partners rather than rivals, and where honest tension remains.</p>
+        <details class="more">
+          <summary class="btn" aria-label="Toggle full notes: Do Faith and Science Really Collide?"><span class="open-label">Read More</span><span class="close-label">Show Less</span></summary>
+          <div class="notes">
+            <p>Science is wonderfully good at answering “how does this work?” Faith speaks to “why is there anything at all, and what is it for?” These questions overlap, but they are not enemies.  A thing can be fully explained and still fully meaningful, the surgeon who describes every process in a birth can still weep at the child.</p>
+            <p>Scripture itself refuses to keep the two in separate boxes. "The heavens declare the glory of God" (Psalm 19:1) creation is described as speaking. The psalmist looks at the same sky the astronomer studies and reaches a different but not contradictory conclusion. And wisdom literature invites us to study what God has made: "Go to the ant... consider its ways and be wise!" (Proverbs 6:6).</p>
+            <p>Tension remains in places, and it is fine to say so. Rushing to resolve every question usually distorts either the science or the Scripture. "Now we see through a glass, darkly" (1 Corinthians 13:12, KJV). Humility is not the absence of conviction but conviction that knows its limits.</p>
+            <h4>My working stance</h4>
+            <ul><li>Study creation carefully; it is God’s work.</li><li>Read Scripture on its own terms.</li><li>Stay curious and teachable.</li></ul>
+            <p>They collide only when either one oversteps. When science claims to answer "why" or faith claims to dictate "how." Kept in their places, they are partners: one reading the book of nature, the other the book of Scripture, both authored by the same hand.</p>
+            <p class="ref">Further reading: Psalm 19:1–4; Psalm 24:1; Romans 1:20; Proverbs 6:6–8; 1 Corinthians 13:12.</p>
+          </div>
+        </details>
+      </article>
+    </div>
+  </main>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" aria-label="Sidebar">
+    <section class="widget" aria-labelledby="scripture-month">
+      <h2 id="scripture-month">Scripture of the Month</h2>
+      <blockquote>“The heavens declare the glory of God; the skies proclaim the work of his hands.”
+        <cite>Psalm 19:1</cite>
+      </blockquote>
+    </section>
+    <section class="widget" aria-labelledby="about-author">
+      <h2 id="about-author">About the Author</h2>
+      <p>An Instrumentation and Control Engineer, walking the road of science and faith, convinced that careful study of creation and humble trust in the Creator belong together.</p>
+    </section>
+  </aside>
+</div>
+
+<!-- CONTACT -->
+<section class="contact" id="contact" aria-labelledby="contact-title">
+  <h2 id="contact-title">Contact</h2>
+  <a class="btn" href="mailto:you@example.com">davidokoth279@gmail.com</a>
+  <p>0768809254</p>
+  <p>Questions and reflection ideas are warmly welcome.</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 Grace &amp; Gravity. “Whatever you do, work at it with all your heart.” Colossians 3:23</p>
+</footer>
+</body>
+</html>
